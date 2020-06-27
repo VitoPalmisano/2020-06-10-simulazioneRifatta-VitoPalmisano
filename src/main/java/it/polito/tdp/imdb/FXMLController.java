@@ -7,6 +7,9 @@ package it.polito.tdp.imdb;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.sun.javafx.scene.shape.BoxHelper.BoxAccessor;
+
+import it.polito.tdp.imdb.model.Actor;
 import it.polito.tdp.imdb.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,10 +38,10 @@ public class FXMLController {
     private Button btnSimulazione; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxGenere"
-    private ComboBox<?> boxGenere; // Value injected by FXMLLoader
+    private ComboBox<String> boxGenere; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxAttore"
-    private ComboBox<?> boxAttore; // Value injected by FXMLLoader
+    private ComboBox<Actor> boxAttore; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtGiorni"
     private TextField txtGiorni; // Value injected by FXMLLoader
@@ -48,17 +51,60 @@ public class FXMLController {
 
     @FXML
     void doAttoriSimili(ActionEvent event) {
-
+    	
+    	txtResult.clear();
+    	
+    	if(boxAttore.getValue()==null) {
+    		txtResult.setText("Selezionare un attore dalla tendina");
+    		return;
+    	}
+    	
+    	txtResult.setText("Attori simili a: "+boxAttore.getValue());
+    	
+    	for(Actor a : model.getRaggiungibili(boxAttore.getValue())) {
+    		txtResult.appendText("\n"+a);
+    	}
+    	
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	
+    	txtResult.clear();
+    	    
+    	if(boxGenere.getValue()==null) {
+    		txtResult.setText("Selezionare un genere dalla tendina");
+    		return;
+    	}
+    	
+    	model.creaGrafo(boxGenere.getValue());
+    	
+    	txtResult.setText("Creato grafo con "+model.getNumVertici()+" vertici "+model.getNumArchi()+" archi");
+    	
+    	boxAttore.getItems().addAll(model.getVertici());
+    	
     }
 
     @FXML
     void doSimulazione(ActionEvent event) {
-
+    	
+    	int ng;
+    	
+    	try {
+			ng = Integer.parseInt(txtGiorni.getText());
+		}catch(NumberFormatException nfe) {
+			txtResult.setText("Inserire un numero intero");
+			return;
+		}
+    	
+    	model.simulazione(ng);
+    	
+    	txtResult.setText("Il produttore in "+ng+" giorni, ha effettuato "+model.getNumPause()+" pause ed ha intervistato: ");
+    	
+    	for(Actor a : model.getIntervistati()) {
+    		txtResult.appendText("\n"+a);
+    	}
+    	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -75,5 +121,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	boxGenere.getItems().addAll(model.getGeneri());
     }
 }
