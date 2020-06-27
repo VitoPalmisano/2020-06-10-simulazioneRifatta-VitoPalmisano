@@ -99,6 +99,9 @@ public class Simulatore {
 				}
 			}
 			
+			// premessa: prob.nextFloat() ritorna un numero compreso fra 0.0 ed 1.0
+			// minore o uguale, perche' il 60% dei numeri che posso estrarre sono compresi fra 0 e 0.6,
+			// invece ho il 40% di possibilità di estrarre un numero compreso fra 0.6 ed 1.0
 			if(prob.nextFloat()<=0.6 || Graphs.neighborListOf(grafo, e.getAttore()).isEmpty()) {
 				Actor nuovo = intervistabili.get(prob.nextInt(intervistabili.size()));
 				
